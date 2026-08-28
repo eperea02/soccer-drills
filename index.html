@@ -32,33 +32,18 @@
   </section>
 
   <section id="practice-plan">
-    <h2 class="section-title">Sample Practice Plan — Aug 25, 2026</h2>
-    <ul class="timeline">
-      <li>
-        <span class="time">~10 min</span>
-        <span><a href="drills/box-dribbling.html">Box Dribbling</a> — warm-up game</span>
-      </li>
-      <li class="break">
-        <span class="time">~5 min</span>
-        <span>Water break</span>
-      </li>
-      <li>
-        <span class="time">~10–15 min</span>
-        <span><a href="drills/zombie-coaches.html">Zombie Coaches</a></span>
-      </li>
-      <li class="break">
-        <span class="time">~5 min</span>
-        <span>Water break</span>
-      </li>
-      <li>
-        <span class="time">~10–15 min</span>
-        <span><a href="drills/buffalo-hunter.html">Buffalo Hunter</a> — like sharks &amp; minnows, kids love this one</span>
-      </li>
-      <li class="break">
-        <span class="time">—</span>
-        <span>If time remains: any other game from the library below</span>
-      </li>
-    </ul>
+    <h2 class="section-title">Build Your Practice</h2>
+    <p class="builder-hint">Drag drills to reorder, or use the arrows on mobile. Tap "+ Add to practice" on any drill in the library below to add it here.</p>
+
+    <div class="plan-controls">
+      <button type="button" id="plan-load-sample" class="plan-btn">Load sample plan</button>
+      <button type="button" id="plan-add-break" class="plan-btn">+ Water break</button>
+      <button type="button" id="plan-clear" class="plan-btn plan-btn-danger">Clear plan</button>
+    </div>
+
+    <ol id="plan-list" class="plan-list"></ol>
+    <p id="plan-empty" class="plan-empty" hidden>Your practice plan is empty — add a drill from the library below, or load the sample plan to get started.</p>
+    <p class="plan-total">Estimated total: <strong id="plan-total-time">0 min</strong></p>
   </section>
 
   <section id="drills">
@@ -189,6 +174,253 @@
     Built for practice — update anytime by adding a new drill page.
   </div>
 </footer>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'ysd-practice-plan-v1';
+  var planListEl = document.getElementById('plan-list');
+  var emptyEl = document.getElementById('plan-empty');
+  var totalEl = document.getElementById('plan-total-time');
+  var grid = document.querySelector('.drill-grid');
+  if (!planListEl) return;
+
+  var DEFAULT_PLAN = [
+    { type: 'drill', slug: 'drills/box-dribbling.html', note: 'warm-up game' },
+    { type: 'break' },
+    { type: 'drill', slug: 'drills/zombie-coaches.html' },
+    { type: 'break' },
+    { type: 'drill', slug: 'drills/buffalo-hunter.html', note: 'like sharks & minnows, kids love this one' },
+    { type: 'break' },
+    { type: 'note', text: 'If time remains: any other game from the library below' }
+  ];
+
+  // Build the drill registry straight from the existing drill-grid cards
+  // (the HTML stays the single source of truth) and inject an add button.
+  var drills = {};
+  if (grid) {
+    Array.prototype.forEach.call(grid.querySelectorAll('.drill-card'), function (card) {
+      var link = card.querySelector('h3 a');
+      var badge = card.querySelector('.badge');
+      if (!link || !badge) return;
+      var slug = link.getAttribute('href');
+      drills[slug] = {
+        slug: slug,
+        title: link.textContent.trim(),
+        href: link.getAttribute('href'),
+        badge: badge.textContent.trim()
+      };
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'add-to-plan';
+      btn.textContent = '+ Add to practice';
+      btn.dataset.slug = slug;
+      btn.addEventListener('click', function () {
+        addItem({ type: 'drill', slug: slug });
+      });
+      card.appendChild(btn);
+    });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str == null ? '' : str;
+    return div.innerHTML;
+  }
+
+  function parseMinutes(badgeText) {
+    var match = badgeText.match(/~?(\d+)(?:[–-](\d+))?\s*min/);
+    if (!match) return 10;
+    var lo = parseInt(match[1], 10);
+    var hi = match[2] ? parseInt(match[2], 10) : lo;
+    return (lo + hi) / 2;
+  }
+
+  function timeLabel(badgeText) {
+    return badgeText.replace(/^[^·]+·\s*/, '');
+  }
+
+  function loadPlan() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_PLAN.slice();
+  }
+
+  function savePlan() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
+    } catch (e) {}
+  }
+
+  var plan = loadPlan();
+  var dragIndex = null;
+
+  function addItem(item) {
+    plan.push(item);
+    render();
+    savePlan();
+  }
+
+  function removeItem(index) {
+    plan.splice(index, 1);
+    render();
+    savePlan();
+  }
+
+  function moveItem(index, dir) {
+    var newIndex = index + dir;
+    if (newIndex < 0 || newIndex >= plan.length) return;
+    var item = plan.splice(index, 1)[0];
+    plan.splice(newIndex, 0, item);
+    render();
+    savePlan();
+  }
+
+  function updateAddButtons() {
+    var used = {};
+    plan.forEach(function (item) {
+      if (item.type === 'drill') used[item.slug] = true;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.add-to-plan'), function (btn) {
+      var slug = btn.dataset.slug;
+      if (used[slug]) {
+        btn.textContent = '✓ Added';
+        btn.disabled = true;
+      } else {
+        btn.textContent = '+ Add to practice';
+        btn.disabled = false;
+      }
+    });
+  }
+
+  function render() {
+    planListEl.innerHTML = '';
+    emptyEl.hidden = plan.length !== 0;
+
+    var totalMinutes = 0;
+
+    plan.forEach(function (item, index) {
+      var li = document.createElement('li');
+      li.className = 'plan-item' + (item.type === 'break' || item.type === 'note' ? ' plan-item-break' : '');
+      li.draggable = true;
+      li.dataset.index = index;
+
+      var handle = document.createElement('span');
+      handle.className = 'plan-handle';
+      handle.setAttribute('aria-hidden', 'true');
+      handle.textContent = '⠿';
+      li.appendChild(handle);
+
+      var content = document.createElement('span');
+      content.className = 'plan-content';
+
+      if (item.type === 'break') {
+        content.innerHTML = '<span class="plan-time">~5 min</span><span class="plan-name">Water break</span>';
+        totalMinutes += 5;
+      } else if (item.type === 'note') {
+        content.innerHTML = '<span class="plan-time">&mdash;</span><span class="plan-name plan-name-note">' + escapeHtml(item.text) + '</span>';
+      } else {
+        var drill = drills[item.slug];
+        if (!drill) {
+          content.innerHTML = '<span class="plan-time">&mdash;</span><span class="plan-name plan-name-note">Drill no longer available</span>';
+        } else {
+          totalMinutes += parseMinutes(drill.badge);
+          var noteHtml = item.note ? ' &mdash; ' + escapeHtml(item.note) : '';
+          content.innerHTML = '<span class="plan-time">' + escapeHtml(timeLabel(drill.badge)) + '</span>' +
+            '<span class="plan-name"><a href="' + drill.href + '">' + escapeHtml(drill.title) + '</a>' + noteHtml + '</span>';
+        }
+      }
+      li.appendChild(content);
+
+      var controls = document.createElement('span');
+      controls.className = 'plan-controls-item';
+
+      var upBtn = document.createElement('button');
+      upBtn.type = 'button';
+      upBtn.className = 'plan-arrow';
+      upBtn.setAttribute('aria-label', 'Move up');
+      upBtn.textContent = '↑';
+      upBtn.disabled = index === 0;
+      upBtn.addEventListener('click', function () { moveItem(index, -1); });
+
+      var downBtn = document.createElement('button');
+      downBtn.type = 'button';
+      downBtn.className = 'plan-arrow';
+      downBtn.setAttribute('aria-label', 'Move down');
+      downBtn.textContent = '↓';
+      downBtn.disabled = index === plan.length - 1;
+      downBtn.addEventListener('click', function () { moveItem(index, 1); });
+
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'plan-remove';
+      removeBtn.setAttribute('aria-label', 'Remove');
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', function () { removeItem(index); });
+
+      controls.appendChild(upBtn);
+      controls.appendChild(downBtn);
+      controls.appendChild(removeBtn);
+      li.appendChild(controls);
+
+      li.addEventListener('dragstart', function () {
+        dragIndex = index;
+        li.classList.add('dragging');
+      });
+      li.addEventListener('dragend', function () {
+        li.classList.remove('dragging');
+        dragIndex = null;
+      });
+      li.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        li.classList.add('drag-over');
+      });
+      li.addEventListener('dragleave', function () {
+        li.classList.remove('drag-over');
+      });
+      li.addEventListener('drop', function (e) {
+        e.preventDefault();
+        li.classList.remove('drag-over');
+        if (dragIndex === null || dragIndex === index) return;
+        var moved = plan.splice(dragIndex, 1)[0];
+        plan.splice(index, 0, moved);
+        render();
+        savePlan();
+      });
+
+      planListEl.appendChild(li);
+    });
+
+    totalEl.textContent = totalMinutes > 0 ? '~' + Math.round(totalMinutes) + ' min' : '0 min';
+    updateAddButtons();
+  }
+
+  var loadSampleBtn = document.getElementById('plan-load-sample');
+  var addBreakBtn = document.getElementById('plan-add-break');
+  var clearBtn = document.getElementById('plan-clear');
+
+  if (loadSampleBtn) loadSampleBtn.addEventListener('click', function () {
+    plan = DEFAULT_PLAN.slice();
+    render();
+    savePlan();
+  });
+  if (addBreakBtn) addBreakBtn.addEventListener('click', function () {
+    addItem({ type: 'break' });
+  });
+  if (clearBtn) clearBtn.addEventListener('click', function () {
+    plan = [];
+    render();
+    savePlan();
+  });
+
+  render();
+})();
+</script>
 
 </body>
 </html>

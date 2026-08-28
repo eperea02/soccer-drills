@@ -241,51 +241,179 @@ nav.site-nav a:hover {
   font-size: 0.92rem;
 }
 
-/* Placeholder card for "coming soon" */
-.drill-card.placeholder {
-  border-style: dashed;
-  background: transparent;
-  box-shadow: none;
+.add-to-plan {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--paper);
+  color: var(--cone-deep);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.add-to-plan:hover {
+  border-color: var(--cone);
+}
+
+.add-to-plan:disabled {
   color: var(--ink-soft);
+  cursor: default;
+  opacity: 0.7;
 }
 
-.drill-card.placeholder:hover {
-  transform: none;
-  box-shadow: none;
+/* Practice plan builder */
+.builder-hint {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  margin: 0 0 16px;
 }
 
-/* Practice plan timeline */
-.timeline {
+.plan-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.plan-btn {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--paper-alt);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.plan-btn:hover {
+  border-color: var(--cone);
+}
+
+.plan-btn-danger {
+  color: var(--cone-deep);
+}
+
+.plan-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.timeline li {
+.plan-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: var(--paper-alt);
   border: 1px solid var(--line);
   border-left: 4px solid var(--cone);
   border-radius: 10px;
-  padding: 12px 16px;
+  padding: 10px 12px;
   margin-bottom: 10px;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
+  cursor: grab;
 }
 
-.timeline li.break {
+.plan-item.plan-item-break {
   border-left-color: var(--line);
+}
+
+.plan-item.dragging {
+  opacity: 0.4;
+}
+
+.plan-item.drag-over {
+  border-color: var(--cone);
+}
+
+.plan-handle {
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1;
+  user-select: none;
+  flex: none;
+}
+
+.plan-content {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-time {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--cone-deep);
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-size: 0.95rem;
+}
+
+.plan-name-note {
   color: var(--ink-soft);
   font-style: italic;
 }
 
-.timeline .time {
+.plan-controls-item {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+
+.plan-arrow,
+.plan-remove {
   font-family: "IBM Plex Mono", monospace;
-  font-weight: 600;
-  font-size: 0.85rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.plan-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.plan-remove {
   color: var(--cone-deep);
-  min-width: 90px;
+}
+
+.plan-empty {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+.plan-total {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin: 4px 0 0;
+}
+
+.plan-total strong {
+  color: var(--ink);
 }
 
 /* Back link */
