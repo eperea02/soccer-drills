@@ -3,18 +3,49 @@
 --------------------------------------------- */
 
 :root {
-  --green-dark: #1b4332;
-  --green: #2d6a4f;
-  --green-mid: #40916c;
-  --green-light: #d8f3dc;
-  --cream: #fbfaf6;
-  --ink: #1f2521;
-  --ink-soft: #55605a;
-  --line: #e2e8e0;
-  --white: #ffffff;
+  --paper: #F5F1E6;
+  --paper-alt: #FCFAF2;
+  --ink: #1C2420;
+  --ink-soft: #5D6459;
+  --line: #DCD4BE;
+  --pitch-deep: #2C6438;
+  --pitch-light: #35733F;
+  --chalk: #F4F1E3;
+  --cone: #E1602C;
+  --cone-deep: #B04A20;
+  --shadow: rgba(28, 36, 32, 0.10);
   --radius: 14px;
-  --shadow: 0 2px 10px rgba(27, 67, 50, 0.08);
   --max-width: 880px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #14180F;
+    --paper-alt: #1B2115;
+    --ink: #ECE8D8;
+    --ink-soft: #A7A88F;
+    --line: #333B29;
+    --pitch-deep: #1E4A2A;
+    --pitch-light: #24552F;
+    --chalk: #EDE9D9;
+    --cone: #F1804A;
+    --cone-deep: #D96A32;
+    --shadow: rgba(0, 0, 0, 0.35);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #14180F;
+  --paper-alt: #1B2115;
+  --ink: #ECE8D8;
+  --ink-soft: #A7A88F;
+  --line: #333B29;
+  --pitch-deep: #1E4A2A;
+  --pitch-light: #24552F;
+  --chalk: #EDE9D9;
+  --cone: #F1804A;
+  --cone-deep: #D96A32;
+  --shadow: rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -27,14 +58,15 @@ html {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: var(--cream);
+  background: var(--paper);
   color: var(--ink);
+  font-family: "Libre Franklin", system-ui, sans-serif;
   line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--green);
+  color: var(--cone-deep);
   text-decoration: none;
 }
 
@@ -52,11 +84,16 @@ img {
   padding: 0 20px;
 }
 
+h1, h2, h3 {
+  font-family: "Oswald", system-ui, sans-serif;
+  text-transform: uppercase;
+}
+
 /* Header */
 header.site-header {
-  background: var(--green-dark);
-  color: var(--white);
-  padding: 22px 0;
+  background: var(--pitch-deep);
+  color: var(--chalk);
+  padding: 20px 0;
 }
 
 header.site-header .wrap {
@@ -68,10 +105,12 @@ header.site-header .wrap {
 }
 
 header.site-header a.brand {
-  color: var(--white);
-  font-weight: 700;
-  font-size: 1.25rem;
-  letter-spacing: 0.01em;
+  color: var(--chalk);
+  font-family: "Oswald", system-ui, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 1.15rem;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -83,26 +122,42 @@ header.site-header a.brand:hover {
 }
 
 nav.site-nav a {
-  color: var(--green-light);
+  color: var(--chalk);
+  opacity: 0.85;
   margin-left: 18px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 nav.site-nav a:hover {
-  color: var(--white);
+  opacity: 1;
+  text-decoration: none;
 }
 
 /* Hero */
 .hero {
-  padding: 44px 0 30px;
+  padding: 46px 0 34px;
   text-align: center;
 }
 
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--cone-deep);
+  margin: 0 0 12px;
+}
+
 .hero h1 {
-  font-size: 2rem;
-  margin: 0 0 10px;
-  color: var(--green-dark);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-size: clamp(30px, 6vw, 44px);
+  line-height: 1.05;
+  margin: 0 0 12px;
+  color: var(--ink);
 }
 
 .hero p {
@@ -114,11 +169,13 @@ nav.site-nav a:hover {
 
 /* Section titles */
 .section-title {
-  font-size: 1.3rem;
-  color: var(--green-dark);
-  margin: 40px 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--green-light);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin: 44px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--cone);
 }
 
 /* Drill cards grid */
@@ -130,11 +187,11 @@ nav.site-nav a:hover {
 }
 
 .drill-card {
-  background: var(--white);
+  background: var(--paper-alt);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 18px 20px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 3px var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -143,24 +200,29 @@ nav.site-nav a:hover {
 
 .drill-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(27, 67, 50, 0.14);
+  box-shadow: 0 6px 18px var(--shadow);
 }
 
 .drill-card .badge {
   align-self: flex-start;
-  background: var(--green-light);
-  color: var(--green-dark);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-family: "IBM Plex Mono", monospace;
+  background: var(--paper);
+  color: var(--cone-deep);
+  border: 1px solid var(--line);
+  font-size: 0.72rem;
+  font-weight: 600;
   padding: 3px 10px;
   border-radius: 999px;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
 .drill-card h3 {
   margin: 2px 0 0;
   font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .drill-card h3 a {
@@ -200,9 +262,9 @@ nav.site-nav a:hover {
 }
 
 .timeline li {
-  background: var(--white);
+  background: var(--paper-alt);
   border: 1px solid var(--line);
-  border-left: 4px solid var(--green-mid);
+  border-left: 4px solid var(--cone);
   border-radius: 10px;
   padding: 12px 16px;
   margin-bottom: 10px;
@@ -213,84 +275,289 @@ nav.site-nav a:hover {
 }
 
 .timeline li.break {
-  border-left-color: #b7c4bd;
+  border-left-color: var(--line);
   color: var(--ink-soft);
   font-style: italic;
 }
 
 .timeline .time {
-  font-weight: 700;
-  color: var(--green-dark);
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--cone-deep);
   min-width: 90px;
 }
 
-/* Drill detail page */
-.drill-detail {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 28px 30px;
-  margin: 30px 0;
-}
-
-.drill-detail .meta-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.pill {
-  background: var(--green-light);
-  color: var(--green-dark);
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 999px;
-}
-
-.drill-detail h1 {
-  margin: 0 0 6px;
-  color: var(--green-dark);
-}
-
-.drill-detail .tagline {
-  color: var(--ink-soft);
-  font-size: 1.05rem;
-  margin: 0 0 20px;
-}
-
-.drill-detail h2 {
-  font-size: 1.05rem;
-  color: var(--green-dark);
-  margin: 26px 0 10px;
-}
-
-.drill-detail ul,
-.drill-detail ol {
-  padding-left: 22px;
-}
-
-.drill-detail li {
-  margin-bottom: 8px;
-}
-
-.variant-box {
-  background: var(--green-light);
-  border-radius: 10px;
-  padding: 14px 18px;
-  margin-top: 20px;
-}
-
-.variant-box h2 {
-  margin-top: 0;
-}
-
+/* Back link */
 .back-link {
   display: inline-block;
-  margin-bottom: 4px;
+  margin: 22px 0 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
   font-weight: 600;
+}
+
+/* Drill detail page */
+.card {
+  background: var(--paper-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 30px 0 40px;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+header.banner {
+  background: var(--pitch-deep);
+  color: var(--chalk);
+  padding: 30px 32px 26px;
+}
+
+header.banner .eyebrow {
+  color: var(--chalk);
+  opacity: 0.8;
+  margin: 0 0 10px;
+}
+
+header.banner h1 {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-size: clamp(30px, 6vw, 46px);
+  line-height: 1;
+  margin: 0 0 12px;
+  color: var(--chalk);
+  text-wrap: balance;
+}
+
+header.banner .tagline {
+  font-size: 16px;
+  max-width: 46ch;
+  color: var(--chalk);
+  opacity: 0.92;
+  margin: 0;
+}
+
+.rule {
+  height: 4px;
+  background: var(--cone);
+  border: none;
+  margin: 20px 0 0;
+}
+
+.body {
+  padding: 30px 32px 8px;
+}
+
+.body > * + * {
+  margin-top: 22px;
+}
+
+.lede {
+  font-size: 17px;
+  max-width: 60ch;
+}
+
+.lede strong {
+  color: var(--cone-deep);
+}
+
+.body h2 {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  font-size: 19px;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+section.block {
+  padding-bottom: 8px;
+}
+
+figure {
+  margin: 14px 0 0;
+}
+
+figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.fig-frame {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 10px 8px;
+  overflow-x: auto;
+}
+
+figcaption {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  max-width: 62ch;
+}
+
+text.lbl-mono {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--ink-soft);
+  letter-spacing: 0.03em;
+}
+
+text.lbl-onfield {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  fill: var(--chalk);
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.swatch.chalk {
+  background: var(--chalk);
+  border: 2px solid var(--ink);
+}
+
+.swatch.cone {
+  background: var(--cone);
+  border: 2px solid var(--cone-deep);
+}
+
+.swatch.tri {
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid var(--cone);
+}
+
+.swatch.chev {
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 9px solid var(--ink-soft);
+}
+
+.swatch.arc {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px dashed var(--cone-deep);
+  background: none;
+}
+
+ol.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+ol.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+  font-size: 15px;
+}
+
+ol.steps li::before {
+  content: counter(step);
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--chalk);
+  background: var(--pitch-deep);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+ul.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 13px;
+}
+
+.tips {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--cone);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.tips h2 {
+  margin-bottom: 10px;
+}
+
+.tips ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14.5px;
+}
+
+.tips li::marker {
+  color: var(--cone-deep);
+}
+
+footer.card-footer {
+  padding: 22px 32px 30px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
+  margin-top: 26px;
 }
 
 /* Footer */
@@ -303,10 +570,18 @@ footer.site-footer {
 
 @media (max-width: 480px) {
   .hero h1 {
-    font-size: 1.6rem;
+    font-size: 1.7rem;
   }
 
-  .drill-detail {
-    padding: 22px 18px;
+  header.banner {
+    padding: 24px 20px 22px;
+  }
+
+  .body {
+    padding: 24px 20px 4px;
+  }
+
+  footer.card-footer {
+    padding: 18px 20px 24px;
   }
 }
