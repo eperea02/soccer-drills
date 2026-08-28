@@ -33,11 +33,12 @@
 
   <section id="practice-plan">
     <h2 class="section-title">Build Your Practice</h2>
-    <p class="builder-hint">Drag drills to reorder, or use the arrows on mobile. Tap "+ Add to practice" on any drill in the library below to add it here.</p>
+    <p class="builder-hint">Drag drills to reorder, or use the arrows on mobile. Tap "+ Add to practice" on any drill in the library below to add it here. The page URL updates as you go &mdash; copy it anytime to share this exact plan.</p>
 
     <div class="plan-controls">
       <button type="button" id="plan-load-sample" class="plan-btn">Load sample plan</button>
       <button type="button" id="plan-add-break" class="plan-btn">+ Water break</button>
+      <button type="button" id="plan-copy-link" class="plan-btn">Copy link</button>
       <button type="button" id="plan-clear" class="plan-btn plan-btn-danger">Clear plan</button>
     </div>
 
@@ -240,7 +241,52 @@
     return badgeText.replace(/^[^·]+·\s*/, '');
   }
 
+  var URL_PARAM = 'plan';
+
+  function encodePlanItem(item) {
+    if (item.type === 'break') return { t: 'b' };
+    if (item.type === 'note') return { t: 'n', x: item.text };
+    var out = { t: 'd', s: item.slug };
+    if (item.note) out.n = item.note;
+    return out;
+  }
+
+  function decodePlanItem(obj) {
+    if (!obj || typeof obj !== 'object') return null;
+    if (obj.t === 'b') return { type: 'break' };
+    if (obj.t === 'n' && typeof obj.x === 'string') return { type: 'note', text: obj.x };
+    if (obj.t === 'd' && typeof obj.s === 'string') {
+      var out = { type: 'drill', slug: obj.s };
+      if (typeof obj.n === 'string') out.note = obj.n;
+      return out;
+    }
+    return null;
+  }
+
+  function decodePlanFromParam(str) {
+    try {
+      var parsed = JSON.parse(str);
+      if (!Array.isArray(parsed)) return null;
+      var out = [];
+      for (var i = 0; i < parsed.length; i++) {
+        var item = decodePlanItem(parsed[i]);
+        if (item) out.push(item);
+      }
+      return out;
+    } catch (e) {
+      return null;
+    }
+  }
+
   function loadPlan() {
+    try {
+      var url = new URL(window.location.href);
+      var paramVal = url.searchParams.get(URL_PARAM);
+      if (paramVal) {
+        var fromUrl = decodePlanFromParam(paramVal);
+        if (fromUrl) return fromUrl;
+      }
+    } catch (e) {}
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -257,19 +303,32 @@
     } catch (e) {}
   }
 
+  function updateURL() {
+    try {
+      var url = new URL(window.location.href);
+      url.searchParams.set(URL_PARAM, JSON.stringify(plan.map(encodePlanItem)));
+      window.history.replaceState(null, '', url.toString());
+    } catch (e) {}
+  }
+
+  function persist() {
+    savePlan();
+    updateURL();
+  }
+
   var plan = loadPlan();
   var dragIndex = null;
 
   function addItem(item) {
     plan.push(item);
     render();
-    savePlan();
+    persist();
   }
 
   function removeItem(index) {
     plan.splice(index, 1);
     render();
-    savePlan();
+    persist();
   }
 
   function moveItem(index, dir) {
@@ -278,7 +337,7 @@
     var item = plan.splice(index, 1)[0];
     plan.splice(newIndex, 0, item);
     render();
-    savePlan();
+    persist();
   }
 
   function updateAddButtons() {
@@ -390,7 +449,7 @@
         var moved = plan.splice(dragIndex, 1)[0];
         plan.splice(index, 0, moved);
         render();
-        savePlan();
+        persist();
       });
 
       planListEl.appendChild(li);
@@ -403,11 +462,12 @@
   var loadSampleBtn = document.getElementById('plan-load-sample');
   var addBreakBtn = document.getElementById('plan-add-break');
   var clearBtn = document.getElementById('plan-clear');
+  var copyLinkBtn = document.getElementById('plan-copy-link');
 
   if (loadSampleBtn) loadSampleBtn.addEventListener('click', function () {
     plan = DEFAULT_PLAN.slice();
     render();
-    savePlan();
+    persist();
   });
   if (addBreakBtn) addBreakBtn.addEventListener('click', function () {
     addItem({ type: 'break' });
@@ -415,10 +475,43 @@
   if (clearBtn) clearBtn.addEventListener('click', function () {
     plan = [];
     render();
-    savePlan();
+    persist();
+  });
+  if (copyLinkBtn) copyLinkBtn.addEventListener('click', function () {
+    updateURL();
+    var link = window.location.href;
+    var originalText = 'Copy link';
+
+    function showMessage(text, delay) {
+      copyLinkBtn.textContent = text;
+      setTimeout(function () { copyLinkBtn.textContent = originalText; }, delay);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(
+        function () { showMessage('Copied!', 1500); },
+        function () { showMessage('Copy failed — copy from address bar', 2500); }
+      );
+    } else {
+      try {
+        var tmp = document.createElement('textarea');
+        tmp.value = link;
+        tmp.style.position = 'fixed';
+        tmp.style.opacity = '0';
+        document.body.appendChild(tmp);
+        tmp.focus();
+        tmp.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(tmp);
+        showMessage(ok ? 'Copied!' : 'Copy failed — copy from address bar', ok ? 1500 : 2500);
+      } catch (e) {
+        showMessage('Copy failed — copy from address bar', 2500);
+      }
+    }
   });
 
   render();
+  updateURL();
 })();
 </script>
 
