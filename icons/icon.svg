@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+
+<defs>
+  <radialGradient id="bg" cx="35%" cy="30%" r="85%">
+    <stop offset="0%" stop-color="#35733F"/>
+    <stop offset="100%" stop-color="#2C6438"/>
+  </radialGradient>
+  <clipPath id="ballClip">
+    <circle cx="512" cy="512" r="306.31"/>
+  </clipPath>
+</defs>
+<rect x="0" y="0" width="1024" height="1024" fill="url(#bg)"/>
+
+<circle cx="512" cy="512" r="392.08" fill="none" stroke="#F4F1E3" stroke-opacity="0.16" stroke-width="14"/>
+<line x1="0" y1="512" x2="1024" y2="512" stroke="#F4F1E3" stroke-opacity="0.10" stroke-width="10"/>
+<circle cx="512" cy="526" r="306.31" fill="#000000" opacity="0.16"/>
+<circle cx="512" cy="512" r="306.31" fill="#F4F1E3"/>
+<g clip-path="url(#ballClip)">
+<path d="M 512.00,383.00 L 634.69,472.14 L 587.82,616.36 L 436.18,616.36 L 389.31,472.14 Z" fill="#1C2420"/>
+<path d="M 531.97,355.51 L 654.66,444.65 L 777.34,355.51 L 730.48,211.28 L 578.83,211.28 Z" fill="#1C2420"/>
+<path d="M 667.00,482.64 L 620.14,626.86 L 742.83,716.00 L 865.51,626.86 L 818.65,482.64 Z" fill="#1C2420"/>
+<path d="M 587.82,650.34 L 436.18,650.34 L 389.31,794.57 L 512.00,883.71 L 634.69,794.57 Z" fill="#1C2420"/>
+<path d="M 403.86,626.86 L 357.00,482.64 L 205.35,482.64 L 158.49,626.86 L 281.17,716.00 Z" fill="#1C2420"/>
+<path d="M 369.34,444.65 L 492.03,355.51 L 445.17,211.28 L 293.52,211.28 L 246.66,355.51 Z" fill="#1C2420"/>
+</g>
+<circle cx="512" cy="512" r="306.31" fill="none" stroke="#1C2420" stroke-opacity="0.25" stroke-width="4"/>
+</svg>
